@@ -122,3 +122,71 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Custom animations for forest background elements */
+@keyframes moving-slow-right {
+  0% {
+    transform: translateX(-20px);
+  }
+  50% {
+    transform: translateX(20px);
+  }
+  100% {
+    transform: translateX(-20px);
+  }
+}
+
+@keyframes moving-slow-left {
+  0% {
+    transform: translateX(20px);
+  }
+  50% {
+    transform: translateX(-20px);
+  }
+  100% {
+    transform: translateX(20px);
+  }
+}
+
+@keyframes moving-slow-up {
+  0% {
+    transform: translateY(15px);
+  }
+  50% {
+    transform: translateY(-15px);
+  }
+  100% {
+    transform: translateY(15px);
+  }
+}
+
+@keyframes floating {
+  0%, 100% {
+    transform: translateY(0px) translateX(0px);
+  }
+  25% {
+    transform: translateY(-10px) translateX(5px);
+  }
+  50% {
+    transform: translateY(0px) translateX(10px);
+  }
+  75% {
+    transform: translateY(-5px) translateX(5px);
+  }
+}
+
+.moving-slow-right {
+  animation: moving-slow-right 8s ease-in-out infinite;
+}
+
+.moving-slow-left {
+  animation: moving-slow-left 10s ease-in-out infinite;
+}
+
+.moving-slow-up {
+  animation: moving-slow-up 12s ease-in-out infinite;
+}
+
+.floating {
+  animation: floating 15s ease-in-out infinite;
+}
