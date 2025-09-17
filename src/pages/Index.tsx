@@ -192,27 +192,47 @@ const Index = () => {
 
   return (
     <div className='min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4 relative overflow-hidden'>
-      {/* Background Mushroom Decorations */}
+      {/* Background Forest Decorations */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        {/* Large mushrooms */}
-        <div className="absolute top-10 left-10 text-6xl opacity-10 animate-pulse">🍄</div>
-        <div className="absolute top-20 right-16 text-5xl opacity-15 animate-bounce" style={{animationDelay: '1s'}}>🟫</div>
-        <div className="absolute bottom-32 left-20 text-7xl opacity-8 animate-pulse" style={{animationDelay: '2s'}}>🍄‍🟫</div>
+        {/* Trees and Forest Elements */}
+        <div className="absolute top-8 left-12 text-6xl opacity-12 animate-pulse" style={{animationDelay: '1s'}}>🌲</div>
+        <div className="absolute top-16 right-20 text-5xl opacity-10 animate-bounce" style={{animationDelay: '2s'}}>🌳</div>
+        <div className="absolute bottom-28 left-16 text-7xl opacity-8 animate-pulse" style={{animationDelay: '3s'}}>🌲</div>
+        <div className="absolute bottom-20 right-10 text-6xl opacity-15 animate-bounce" style={{animationDelay: '1.5s'}}>🌳</div>
         
-        {/* Medium mushrooms */}
-        <div className="absolute top-1/3 right-8 text-4xl opacity-12 animate-bounce" style={{animationDelay: '0.5s'}}>🍄</div>
-        <div className="absolute bottom-1/4 right-1/4 text-3xl opacity-10 animate-pulse" style={{animationDelay: '1.5s'}}>🟫</div>
-        <div className="absolute top-1/2 left-8 text-4xl opacity-15 animate-bounce" style={{animationDelay: '2.5s'}}>🍄‍🟫</div>
+        {/* Mushrooms */}
+        <div className="absolute top-1/3 left-8 text-4xl opacity-12 animate-pulse" style={{animationDelay: '0.5s'}}>🍄</div>
+        <div className="absolute bottom-1/4 right-1/4 text-3xl opacity-10 animate-bounce" style={{animationDelay: '4s'}}>🍄</div>
+        <div className="absolute top-3/4 left-1/3 text-2xl opacity-8 animate-pulse" style={{animationDelay: '2.5s'}}>🍄</div>
         
-        {/* Small mushrooms */}
-        <div className="absolute top-1/4 left-1/3 text-2xl opacity-8 animate-pulse" style={{animationDelay: '3s'}}>🍄</div>
-        <div className="absolute bottom-1/3 left-1/2 text-2xl opacity-12 animate-bounce" style={{animationDelay: '0.8s'}}>🟫</div>
-        <div className="absolute top-3/4 right-1/3 text-3xl opacity-10 animate-pulse" style={{animationDelay: '1.8s'}}>🍄</div>
-        <div className="absolute bottom-16 left-1/4 text-2xl opacity-15 animate-bounce" style={{animationDelay: '2.8s'}}>🍄‍🟫</div>
+        {/* Flowers and Plants */}
+        <div className="absolute top-1/4 right-1/3 text-3xl opacity-15 animate-bounce" style={{animationDelay: '1.8s'}}>🌸</div>
+        <div className="absolute bottom-1/3 left-1/2 text-2xl opacity-12 animate-pulse" style={{animationDelay: '3.5s'}}>🌺</div>
+        <div className="absolute top-2/3 right-1/5 text-3xl opacity-10 animate-bounce" style={{animationDelay: '0.8s'}}>🌼</div>
+        <div className="absolute top-1/2 left-1/4 text-2xl opacity-8 animate-pulse" style={{animationDelay: '2.2s'}}>🌻</div>
         
-        {/* Extra small decorative mushrooms */}
-        <div className="absolute top-16 left-1/2 text-xl opacity-6 animate-pulse" style={{animationDelay: '4s'}}>🍄</div>
-        <div className="absolute bottom-40 right-12 text-xl opacity-8 animate-bounce" style={{animationDelay: '1.2s'}}>🟫</div>
+        {/* Leaves and Nature */}
+        <div className="absolute top-20 left-1/3 text-2xl opacity-10 animate-bounce" style={{animationDelay: '1.2s'}}>🍃</div>
+        <div className="absolute bottom-40 right-1/3 text-3xl opacity-12 animate-pulse" style={{animationDelay: '4.2s'}}>🍃</div>
+        <div className="absolute top-1/5 right-12 text-2xl opacity-8 animate-bounce" style={{animationDelay: '3.8s'}}>🌿</div>
+        <div className="absolute bottom-1/5 left-20 text-2xl opacity-15 animate-pulse" style={{animationDelay: '0.3s'}}>🌿</div>
+        
+        {/* Clouds */}
+        <div className="absolute top-4 left-1/4 text-4xl opacity-8 animate-pulse" style={{animationDelay: '5s'}}>☁️</div>
+        <div className="absolute top-12 right-1/4 text-3xl opacity-12 animate-bounce" style={{animationDelay: '6s'}}>☁️</div>
+        <div className="absolute top-6 left-3/4 text-2xl opacity-6 animate-pulse" style={{animationDelay: '7s'}}>☁️</div>
+        
+        {/* Forest Animals */}
+        <div className="absolute top-1/2 right-8 text-2xl opacity-10 animate-bounce" style={{animationDelay: '8s'}}>🦌</div>
+        <div className="absolute bottom-1/4 left-1/5 text-2xl opacity-12 animate-pulse" style={{animationDelay: '9s'}}>🐰</div>
+        <div className="absolute top-2/5 left-3/4 text-3xl opacity-8 animate-bounce" style={{animationDelay: '10s'}}>🐻</div>
+        <div className="absolute bottom-1/3 right-1/6 text-xl opacity-15 animate-pulse" style={{animationDelay: '11s'}}>🦔</div>
+        <div className="absolute top-3/5 left-1/6 text-xl opacity-10 animate-bounce" style={{animationDelay: '12s'}}>🐿️</div>
+        
+        {/* Slow Moving Elements */}
+        <div className="absolute top-1/3 right-1/2 text-2xl opacity-8 animate-pulse moving-slow-right" style={{animationDelay: '2s'}}>🦋</div>
+        <div className="absolute bottom-2/5 left-1/3 text-xl opacity-12 animate-bounce moving-slow-left" style={{animationDelay: '4s'}}>🐝</div>
+        <div className="absolute top-4/5 right-2/5 text-xl opacity-10 animate-pulse moving-slow-up" style={{animationDelay: '6s'}}>🪶</div>
       </div>
 
       <Card className="w-full max-w-md relative z-10">
@@ -242,7 +262,7 @@ const Index = () => {
                 {!walletConnected ? (
                   <Button 
                     onClick={connectWallet} 
-                    disabled={loading}
+                  disabled={loading}
                     className="w-full"
                   >
                     {loading ? 'Connecting...' : 'Connect Wallet'}
