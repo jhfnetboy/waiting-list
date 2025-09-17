@@ -3,7 +3,7 @@
  * No external dependencies required
  */
 
-// EVM Test Networks
+// EVM Networks (Test Networks + Optimism Mainnet)
 export const TEST_NETWORKS = {
   sepolia: {
     chainId: '0xaa36a7', // 11155111
@@ -37,6 +37,17 @@ export const TEST_NETWORKS = {
     },
     rpcUrls: ['https://rpc-mumbai.maticvigil.com/'],
     blockExplorerUrls: ['https://mumbai.polygonscan.com/'],
+  },
+  optimism: {
+    chainId: '0xa', // 10
+    chainName: 'Optimism Mainnet',
+    nativeCurrency: {
+      name: 'Ethereum',
+      symbol: 'ETH',
+      decimals: 18,
+    },
+    rpcUrls: ['https://mainnet.optimism.io'],
+    blockExplorerUrls: ['https://optimistic.etherscan.io/'],
   },
 } as const
 
