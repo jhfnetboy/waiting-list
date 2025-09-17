@@ -147,9 +147,21 @@ app.get('/api/verify', async (c) => {
     userData.verified = true
     userData.verifiedAt = new Date().toISOString()
 
+    // 📊 DEBUG: Log verification status update
+    console.log(`✅ EMAIL VERIFICATION UPDATE:`, {
+      email: email,
+      position: userData.position,
+      walletAddress: userData.walletAddress,
+      verified: userData.verified,
+      verifiedAt: userData.verifiedAt
+    })
+
     // Update user data
     await c.env.WAITING_LIST.put(email, JSON.stringify(userData))
     await c.env.WAITING_LIST.put(`wallet:${userData.walletAddress}`, JSON.stringify(userData))
+    
+    // 📊 DEBUG: Confirm data was saved
+    console.log(`💾 KV UPDATE COMPLETED for email: ${email}`)
     
     // Remove verification token (one-time use)
     await c.env.WAITING_LIST.delete(`verify:${token}`)
@@ -195,6 +207,16 @@ app.get('/api/waitlist/:email', async (c) => {
     }
     
     const user = JSON.parse(userData)
+    
+    // 📊 DEBUG: Log user verification status query
+    console.log(`🔍 USER VERIFICATION STATUS QUERY:`, {
+      email: user.email,
+      position: user.position,
+      verified: user.verified,
+      verifiedAt: user.verifiedAt,
+      hasVerificationToken: !!user.verificationToken
+    })
+    
     return c.json({
       email: user.email,
       position: user.position,
@@ -206,12 +228,13 @@ app.get('/api/waitlist/:email', async (c) => {
       message: `You are #${user.position} in the waiting list${user.verified ? ' (Verified ✅)' : ' (Unverified ⚠️)'}`
     })
   } catch (error) {
+    console.error('Error fetching user:', error)
     return c.json({ error: 'Internal server error' }, 500)
   }
 })
 
 // Admin authentication middleware
-const authenticateAdmin = async (c: any, password: string) => {
+const authenticateAdmin = async (c: unknown, password: string) => {
   const adminPassword = c.env.ADMIN_PASSWORD || 'admin123'
   return password === adminPassword
 }
@@ -233,6 +256,7 @@ app.post('/api/admin/login', async (c) => {
       return c.json({ error: 'Invalid password' }, 401)
     }
   } catch (error) {
+    console.error('Admin login error:', error)
     return c.json({ error: 'Internal server error' }, 500)
   }
 })
@@ -346,6 +370,7 @@ app.get('/api/waitlist', async (c) => {
     
     return c.json({ total })
   } catch (error) {
+    console.error('Error getting total count:', error)
     return c.json({ error: 'Internal server error' }, 500)
   }
 })
