@@ -191,8 +191,31 @@ const Index = () => {
   }
 
   return (
-    <div className='min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4'>
-      <Card className="w-full max-w-md">
+    <div className='min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4 relative overflow-hidden'>
+      {/* Background Mushroom Decorations */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        {/* Large mushrooms */}
+        <div className="absolute top-10 left-10 text-6xl opacity-10 animate-pulse">🍄</div>
+        <div className="absolute top-20 right-16 text-5xl opacity-15 animate-bounce" style={{animationDelay: '1s'}}>🟫</div>
+        <div className="absolute bottom-32 left-20 text-7xl opacity-8 animate-pulse" style={{animationDelay: '2s'}}>🍄‍🟫</div>
+        
+        {/* Medium mushrooms */}
+        <div className="absolute top-1/3 right-8 text-4xl opacity-12 animate-bounce" style={{animationDelay: '0.5s'}}>🍄</div>
+        <div className="absolute bottom-1/4 right-1/4 text-3xl opacity-10 animate-pulse" style={{animationDelay: '1.5s'}}>🟫</div>
+        <div className="absolute top-1/2 left-8 text-4xl opacity-15 animate-bounce" style={{animationDelay: '2.5s'}}>🍄‍🟫</div>
+        
+        {/* Small mushrooms */}
+        <div className="absolute top-1/4 left-1/3 text-2xl opacity-8 animate-pulse" style={{animationDelay: '3s'}}>🍄</div>
+        <div className="absolute bottom-1/3 left-1/2 text-2xl opacity-12 animate-bounce" style={{animationDelay: '0.8s'}}>🟫</div>
+        <div className="absolute top-3/4 right-1/3 text-3xl opacity-10 animate-pulse" style={{animationDelay: '1.8s'}}>🍄</div>
+        <div className="absolute bottom-16 left-1/4 text-2xl opacity-15 animate-bounce" style={{animationDelay: '2.8s'}}>🍄‍🟫</div>
+        
+        {/* Extra small decorative mushrooms */}
+        <div className="absolute top-16 left-1/2 text-xl opacity-6 animate-pulse" style={{animationDelay: '4s'}}>🍄</div>
+        <div className="absolute bottom-40 right-12 text-xl opacity-8 animate-bounce" style={{animationDelay: '1.2s'}}>🟫</div>
+      </div>
+
+      <Card className="w-full max-w-md relative z-10">
         <CardHeader className="text-center">
           <CardTitle className="text-2xl font-bold text-gray-900">
             Join Our Waiting List
