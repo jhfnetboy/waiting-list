@@ -52,8 +52,8 @@ npx wrangler kv:namespace create "WAITING_LIST" --preview
   "kv_namespaces": [
     {
       "binding": "WAITING_LIST",
-      "id": "你的生产环境ID",
-      "preview_id": "你的预览环境ID"
+      "id": "你的生产环境 ID",
+      "preview_id": "你的预览环境 ID"
     }
   ]
 }
@@ -67,9 +67,9 @@ npx wrangler deploy
 
 ## 功能特性
 
-- ✅ Web3钱包连接验证
-- ✅ 数字签名验证("Waiting for you!")
-- ✅ 多测试网支持(Sepolia/Goerli/Mumbai)
+- ✅ Web3 钱包连接验证
+- ✅ 数字签名验证 ("Waiting for you!")
+- ✅ 多测试网支持 (Sepolia/Goerli/Mumbai)
 - ✅ 邮箱和钱包地址防重复
 - ✅ 响应式界面
 - ✅ 实时状态查询
@@ -99,7 +99,7 @@ npx wrangler deploy
 - **后端**: Hono + Cloudflare Workers
 - **存储**: Cloudflare KV
 - **部署**: Cloudflare Workers (统一部署)
-- **架构**: 单一Worker同时处理前端资源和API接口
+- **架构**: 单一 Worker 同时处理前端资源和 API 接口
 
 ## 环境变量配置
 
@@ -117,7 +117,7 @@ npx wrangler deploy
 
 #### 步骤 1: 注册 Resend 账户
 1. 访问 [resend.com](https://resend.com)
-2. 注册免费账户 (每月3000封邮件免费额度)
+2. 注册免费账户 (每月 3000 封邮件免费额度)
 3. 验证你的域名或使用 Resend 提供的测试域名
 
 #### 步骤 2: 获取 API Key
@@ -137,5 +137,5 @@ npx wrangler secret put RESEND_API_KEY
 
 - [ ] 登录 Cloudflare: `npx wrangler login`
 - [ ] (可选) 注册 Resend 账户并获取 API Key
-- [ ] (可选) 设置邮件发送密钥: `npx wrangler secret put RESEND_API_KEY`
+- [ ] (可选) 设置邮件发送密钥：`npx wrangler secret put RESEND_API_KEY`
 - [ ] 修改 `wrangler.jsonc` 中的 `FROM_EMAIL` 为你的域名邮箱
