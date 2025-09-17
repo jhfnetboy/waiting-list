@@ -210,6 +210,134 @@ app.get('/api/waitlist/:email', async (c) => {
   }
 })
 
+// Admin authentication middleware
+const authenticateAdmin = async (c: any, password: string) => {
+  const adminPassword = c.env.ADMIN_PASSWORD || 'admin123'
+  return password === adminPassword
+}
+
+// Admin login endpoint
+app.post('/api/admin/login', async (c) => {
+  try {
+    const { password } = await c.req.json()
+    
+    if (!password) {
+      return c.json({ error: 'Password required' }, 400)
+    }
+    
+    const isValid = await authenticateAdmin(c, password)
+    
+    if (isValid) {
+      return c.json({ success: true })
+    } else {
+      return c.json({ error: 'Invalid password' }, 401)
+    }
+  } catch (error) {
+    return c.json({ error: 'Internal server error' }, 500)
+  }
+})
+
+// Admin users endpoint with pagination
+app.get('/api/admin/users', async (c) => {
+  try {
+    const authHeader = c.req.header('Authorization')
+    const password = authHeader?.replace('Bearer ', '')
+    
+    if (!password || !(await authenticateAdmin(c, password))) {
+      return c.json({ error: 'Unauthorized' }, 401)
+    }
+    
+    const page = parseInt(c.req.query('page') || '1')
+    const limit = parseInt(c.req.query('limit') || '10')
+    const offset = (page - 1) * limit
+    
+    // Get all user emails (not position or verify keys)
+    const list = await c.env.WAITING_LIST.list()
+    const userEmails = list.keys
+      .filter(key => 
+        key.name.includes('@') && 
+        !key.name.startsWith('position:') && 
+        !key.name.startsWith('verify:') && 
+        !key.name.startsWith('wallet:')
+      )
+      .sort((a, b) => a.name.localeCompare(b.name))
+    
+    const totalUsers = userEmails.length
+    const paginatedEmails = userEmails.slice(offset, offset + limit)
+    
+    // Fetch user data
+    const users = await Promise.all(
+      paginatedEmails.map(async (key) => {
+        const userData = await c.env.WAITING_LIST.get(key.name)
+        return userData ? JSON.parse(userData) : null
+      })
+    )
+    
+    const validUsers = users.filter(Boolean).sort((a, b) => a.position - b.position)
+    
+    return c.json({
+      users: validUsers,
+      total: totalUsers,
+      page,
+      limit,
+      totalPages: Math.ceil(totalUsers / limit)
+    })
+  } catch (error) {
+    console.error('Admin users error:', error)
+    return c.json({ error: 'Internal server error' }, 500)
+  }
+})
+
+// Admin stats endpoint
+app.get('/api/admin/stats', async (c) => {
+  try {
+    const authHeader = c.req.header('Authorization')
+    const password = authHeader?.replace('Bearer ', '')
+    
+    if (!password || !(await authenticateAdmin(c, password))) {
+      return c.json({ error: 'Unauthorized' }, 401)
+    }
+    
+    // Get all user emails
+    const list = await c.env.WAITING_LIST.list()
+    const userEmails = list.keys.filter(key => 
+      key.name.includes('@') && 
+      !key.name.startsWith('position:') && 
+      !key.name.startsWith('verify:') && 
+      !key.name.startsWith('wallet:')
+    )
+    
+    // Fetch all user data for stats
+    const allUsers = await Promise.all(
+      userEmails.map(async (key) => {
+        const userData = await c.env.WAITING_LIST.get(key.name)
+        return userData ? JSON.parse(userData) : null
+      })
+    )
+    
+    const validUsers = allUsers.filter(Boolean)
+    const verifiedUsers = validUsers.filter(user => user.verified)
+    const unverifiedUsers = validUsers.filter(user => !user.verified)
+    
+    // Network statistics
+    const networkStats: Record<string, number> = {}
+    validUsers.forEach(user => {
+      const network = user.network || 'unknown'
+      networkStats[network] = (networkStats[network] || 0) + 1
+    })
+    
+    return c.json({
+      totalUsers: validUsers.length,
+      verifiedUsers: verifiedUsers.length,
+      unverifiedUsers: unverifiedUsers.length,
+      networkStats
+    })
+  } catch (error) {
+    console.error('Admin stats error:', error)
+    return c.json({ error: 'Internal server error' }, 500)
+  }
+})
+
 app.get('/api/waitlist', async (c) => {
   try {
     // Get total count (simplified - in production you'd want better pagination)

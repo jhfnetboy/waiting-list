@@ -198,16 +198,27 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   font-feature-settings: "liga" 1, "kern" 1;
-  transition: all 0.3s ease;
+  transition: all 0.3s ease-in-out;
   cursor: pointer;
+  will-change: transform, opacity, filter;
 }
 
 /* Emoji hover effect - clear and bright on hover */
 .forest-emoji:hover {
   opacity: 1 !important;
-  filter: brightness(1.3) contrast(1.4) saturate(1.5);
-  text-shadow: 0 0 4px rgba(255, 255, 255, 0.5);
-  transform: scale(1.1);
-  z-index: 5;
+  filter: brightness(1.4) contrast(1.5) saturate(1.6) drop-shadow(0 0 8px rgba(255, 255, 255, 0.8));
+  transform: scale(1.15) translateZ(0);
+  z-index: 10;
   position: relative;
+  animation-play-state: paused;
+}
+
+/* Ensure pointer events work */
+.forest-emoji {
+  pointer-events: auto !important;
+}
+
+/* Override any parent pointer-events-none */
+.forest-emoji:hover {
+  pointer-events: auto !important;
 }
