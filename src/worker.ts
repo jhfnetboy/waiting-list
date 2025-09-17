@@ -359,12 +359,50 @@ async function getNextPosition(kv: KVNamespace): Promise<number> {
 async function sendVerificationEmail(env: Env, email: string, token: string): Promise<boolean> {
   // Skip if no API key configured
   if (!env.RESEND_API_KEY) {
-    console.log('Resend API key not configured, skipping verification email')
+    console.log('🔴 EMAIL DEBUG: Resend API key not configured, skipping verification email')
     return false
   }
 
+  console.log('📧 EMAIL DEBUG: Starting verification email send process')
+  console.log('📧 EMAIL DEBUG: Target email:', email)
+  console.log('📧 EMAIL DEBUG: Token:', token.substring(0, 8) + '...')
+  console.log('📧 EMAIL DEBUG: FROM_EMAIL:', env.FROM_EMAIL || 'Waiting List <noreply@yourdomain.com>')
+
   try {
     const verifyUrl = `https://waiting-list.jhfnetboy.workers.dev/api/verify?token=${token}`
+    console.log('📧 EMAIL DEBUG: Verification URL:', verifyUrl)
+    
+    const emailPayload = {
+      from: env.FROM_EMAIL || 'Waiting List <noreply@yourdomain.com>',
+      to: [email],
+      subject: 'Verify Your Email - Waiting List',
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <h2 style="color: #333;">🌲 Verify Your Email</h2>
+          <p>Hi there,</p>
+          <p>Thank you for joining our waiting list with your Web3 wallet! To complete your registration, please verify your email address.</p>
+          
+          <div style="margin: 30px 0; text-align: center;">
+            <a href="${verifyUrl}" style="background: #007bff; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; display: inline-block;">
+              ✅ Verify Email Address
+            </a>
+          </div>
+          
+          <p>Or copy and paste this link into your browser:</p>
+          <p style="background: #f5f5f5; padding: 10px; border-radius: 3px; word-break: break-all;">
+            ${verifyUrl}
+          </p>
+          
+          <p style="color: #666; font-size: 14px;">
+            If you didn't sign up for our waiting list, you can safely ignore this email.
+          </p>
+          
+          <p>Best regards,<br>The Waiting List Team 🚀</p>
+        </div>
+      `,
+    }
+
+    console.log('📧 EMAIL DEBUG: Email payload prepared, making API request...')
     
     const response = await fetch('https://api.resend.com/emails', {
       method: 'POST',
@@ -372,46 +410,28 @@ async function sendVerificationEmail(env: Env, email: string, token: string): Pr
         'Authorization': `Bearer ${env.RESEND_API_KEY}`,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
-        from: env.FROM_EMAIL || 'Waiting List <noreply@yourdomain.com>',
-        to: [email],
-        subject: 'Verify Your Email - Waiting List',
-        html: `
-          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-            <h2 style="color: #333;">🌲 Verify Your Email</h2>
-            <p>Hi there,</p>
-            <p>Thank you for joining our waiting list with your Web3 wallet! To complete your registration, please verify your email address.</p>
-            
-            <div style="margin: 30px 0; text-align: center;">
-              <a href="${verifyUrl}" style="background: #007bff; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; display: inline-block;">
-                ✅ Verify Email Address
-              </a>
-            </div>
-            
-            <p>Or copy and paste this link into your browser:</p>
-            <p style="background: #f5f5f5; padding: 10px; border-radius: 3px; word-break: break-all;">
-              ${verifyUrl}
-            </p>
-            
-            <p style="color: #666; font-size: 14px;">
-              If you didn't sign up for our waiting list, you can safely ignore this email.
-            </p>
-            
-            <p>Best regards,<br>The Waiting List Team 🚀</p>
-          </div>
-        `,
-      }),
+      body: JSON.stringify(emailPayload),
     })
 
+    console.log('📧 EMAIL DEBUG: API response status:', response.status)
+    console.log('📧 EMAIL DEBUG: API response headers:', Object.fromEntries(response.headers.entries()))
+
     if (!response.ok) {
-      console.error('Failed to send verification email:', await response.text())
+      const errorText = await response.text()
+      console.error('🔴 EMAIL DEBUG: Failed to send verification email')
+      console.error('🔴 EMAIL DEBUG: Status:', response.status)
+      console.error('🔴 EMAIL DEBUG: Error response:', errorText)
       return false
     }
 
-    console.log('Verification email sent successfully to:', email)
+    const responseData = await response.json()
+    console.log('✅ EMAIL DEBUG: Verification email sent successfully!')
+    console.log('✅ EMAIL DEBUG: Response data:', responseData)
+    console.log('✅ EMAIL DEBUG: Email sent to:', email)
     return true
   } catch (error) {
-    console.error('Error sending verification email:', error)
+    console.error('🔴 EMAIL DEBUG: Exception during email send:', error)
+    console.error('🔴 EMAIL DEBUG: Error stack:', error instanceof Error ? error.stack : 'No stack trace')
     return false
   }
 }
