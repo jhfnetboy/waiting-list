@@ -21,7 +21,7 @@
     }
   ],
   "vars": {
-    "FROM_EMAIL": "Waiting List <noreply@yourdomain.com>",
+    "FROM_EMAIL": "Waiting List <noreply@aastar.io>",
     "ADMIN_PASSWORD": "secure_admin_password_2024"
   },
   "minify": true,

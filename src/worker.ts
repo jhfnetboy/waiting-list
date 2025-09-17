@@ -8,6 +8,7 @@
 
 import { Hono } from 'hono'
 import { cors } from 'hono/cors'
+import { renderEmailTemplate } from './config/email-templates'
 
 // Define the Cloudflare environment interface
 interface Env {
@@ -397,34 +398,18 @@ async function sendVerificationEmail(env: Env, email: string, token: string): Pr
     const verifyUrl = `https://waiting-list.jhfnetboy.workers.dev/api/verify?token=${token}`
     console.log('📧 EMAIL DEBUG: Verification URL:', verifyUrl)
     
+    // Render email template with variables
+    const emailContent = renderEmailTemplate('verification', {
+      VERIFICATION_LINK: verifyUrl,
+      EMAIL_ADDRESS: email
+    })
+    
     const emailPayload = {
-      from: env.FROM_EMAIL || 'Waiting List <noreply@yourdomain.com>',
+      from: env.FROM_EMAIL || 'Waiting List <noreply@aastar.io>',
       to: [email],
-      subject: 'Verify Your Email - Waiting List',
-      html: `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-          <h2 style="color: #333;">🌲 Verify Your Email</h2>
-          <p>Hi there,</p>
-          <p>Thank you for joining our waiting list with your Web3 wallet! To complete your registration, please verify your email address.</p>
-          
-          <div style="margin: 30px 0; text-align: center;">
-            <a href="${verifyUrl}" style="background: #007bff; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; display: inline-block;">
-              ✅ Verify Email Address
-            </a>
-          </div>
-          
-          <p>Or copy and paste this link into your browser:</p>
-          <p style="background: #f5f5f5; padding: 10px; border-radius: 3px; word-break: break-all;">
-            ${verifyUrl}
-          </p>
-          
-          <p style="color: #666; font-size: 14px;">
-            If you didn't sign up for our waiting list, you can safely ignore this email.
-          </p>
-          
-          <p>Best regards,<br>The Waiting List Team 🚀</p>
-        </div>
-      `,
+      subject: emailContent.subject,
+      html: emailContent.html,
+      text: emailContent.text,
     }
 
     console.log('📧 EMAIL DEBUG: Email payload prepared, making API request...')
@@ -470,47 +455,11 @@ async function sendWelcomeEmail(env: Env, email: string, position: number): Prom
   }
 
   try {
-    const subject = 'Welcome to our Waiting List! 🎉'
-    const htmlBody = `
-      <!DOCTYPE html>
-      <html>
-      <head>
-        <meta charset="utf-8">
-        <style>
-          body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
-          .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-          .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
-          .content { background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px; }
-          .position { font-size: 24px; font-weight: bold; color: #667eea; text-align: center; margin: 20px 0; }
-          .footer { text-align: center; margin-top: 30px; color: #666; font-size: 14px; }
-        </style>
-      </head>
-      <body>
-        <div class="container">
-          <div class="header">
-            <h1>🎉 You're on the list!</h1>
-          </div>
-          <div class="content">
-            <p>Hi there,</p>
-            <p>Thank you for joining our waiting list! We're excited to have you on board.</p>
-            
-            <div class="position">
-              You are #${position} in line
-            </div>
-            
-            <p>We'll notify you as soon as we launch. In the meantime, feel free to follow our progress and updates.</p>
-            
-            <p>Best regards,<br>
-            The Team</p>
-          </div>
-          <div class="footer">
-            <p>This email was sent because you joined our waiting list.<br>
-            If you have any questions, please contact us.</p>
-          </div>
-        </div>
-      </body>
-      </html>
-    `
+    // Render email template with variables
+    const emailContent = renderEmailTemplate('welcome', {
+      POSITION: position.toString(),
+      EMAIL_ADDRESS: email
+    })
 
     // Send email using Resend API
     const response = await fetch('https://api.resend.com/emails', {
@@ -520,10 +469,11 @@ async function sendWelcomeEmail(env: Env, email: string, position: number): Prom
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        from: env.FROM_EMAIL || 'Waiting List <noreply@yourdomain.com>',
+        from: env.FROM_EMAIL || 'Waiting List <noreply@aastar.io>',
         to: [email],
-        subject: subject,
-        html: htmlBody,
+        subject: emailContent.subject,
+        html: emailContent.html,
+        text: emailContent.text,
       }),
     })
 
