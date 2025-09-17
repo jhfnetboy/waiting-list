@@ -195,44 +195,44 @@ const Index = () => {
       {/* Background Forest Decorations */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         {/* Trees and Forest Elements */}
-        <div className="absolute top-8 left-12 text-8xl opacity-12 floating" style={{animationDelay: '1s'}}>🌲</div>
-        <div className="absolute top-16 right-20 text-7xl opacity-10 moving-slow-right" style={{animationDelay: '2s'}}>🌳</div>
-        <div className="absolute bottom-28 left-16 text-9xl opacity-8 floating" style={{animationDelay: '3s'}}>🌲</div>
-        <div className="absolute bottom-20 right-10 text-8xl opacity-15 moving-slow-left" style={{animationDelay: '1.5s'}}>🌳</div>
+        <div className="absolute top-8 left-12 text-8xl opacity-12 floating forest-emoji" style={{animationDelay: '1s'}}>🌲</div>
+        <div className="absolute top-16 right-20 text-7xl opacity-10 moving-slow-right forest-emoji" style={{animationDelay: '2s'}}>🌳</div>
+        <div className="absolute bottom-28 left-16 text-9xl opacity-8 floating forest-emoji" style={{animationDelay: '3s'}}>🌲</div>
+        <div className="absolute bottom-20 right-10 text-8xl opacity-15 moving-slow-left forest-emoji" style={{animationDelay: '1.5s'}}>🌳</div>
         
         {/* Mushrooms */}
-        <div className="absolute top-1/3 left-8 text-5xl opacity-12 floating" style={{animationDelay: '0.5s'}}>🍄</div>
-        <div className="absolute bottom-1/4 right-1/4 text-4xl opacity-10 moving-slow-up" style={{animationDelay: '4s'}}>🍄</div>
-        <div className="absolute top-3/4 left-1/3 text-3xl opacity-8 floating" style={{animationDelay: '2.5s'}}>🍄</div>
+        <div className="absolute top-1/3 left-8 text-5xl opacity-12 floating forest-emoji" style={{animationDelay: '0.5s'}}>🍄</div>
+        <div className="absolute bottom-1/4 right-1/4 text-4xl opacity-10 moving-slow-up forest-emoji" style={{animationDelay: '4s'}}>🍄</div>
+        <div className="absolute top-3/4 left-1/3 text-3xl opacity-8 floating forest-emoji" style={{animationDelay: '2.5s'}}>🍄</div>
         
         {/* Flowers and Plants */}
-        <div className="absolute top-1/4 right-1/3 text-4xl opacity-15 floating" style={{animationDelay: '1.8s'}}>🌸</div>
-        <div className="absolute bottom-1/3 left-1/2 text-3xl opacity-12 moving-slow-up" style={{animationDelay: '3.5s'}}>🌺</div>
-        <div className="absolute top-2/3 right-1/5 text-4xl opacity-10 floating" style={{animationDelay: '0.8s'}}>🌼</div>
-        <div className="absolute top-1/2 left-1/4 text-3xl opacity-8 moving-slow-right" style={{animationDelay: '2.2s'}}>🌻</div>
+        <div className="absolute top-1/4 right-1/3 text-4xl opacity-15 floating forest-emoji" style={{animationDelay: '1.8s'}}>🌸</div>
+        <div className="absolute bottom-1/3 left-1/2 text-3xl opacity-12 moving-slow-up forest-emoji" style={{animationDelay: '3.5s'}}>🌺</div>
+        <div className="absolute top-2/3 right-1/5 text-4xl opacity-10 floating forest-emoji" style={{animationDelay: '0.8s'}}>🌼</div>
+        <div className="absolute top-1/2 left-1/4 text-3xl opacity-8 moving-slow-right forest-emoji" style={{animationDelay: '2.2s'}}>🌻</div>
         
         {/* Leaves and Nature */}
-        <div className="absolute top-20 left-1/3 text-3xl opacity-10 moving-slow-left" style={{animationDelay: '1.2s'}}>🍃</div>
-        <div className="absolute bottom-40 right-1/3 text-4xl opacity-12 floating" style={{animationDelay: '4.2s'}}>🍃</div>
-        <div className="absolute top-1/5 right-12 text-3xl opacity-8 moving-slow-right" style={{animationDelay: '3.8s'}}>🌿</div>
-        <div className="absolute bottom-1/5 left-20 text-3xl opacity-15 floating" style={{animationDelay: '0.3s'}}>🌿</div>
+        <div className="absolute top-20 left-1/3 text-3xl opacity-10 moving-slow-left forest-emoji" style={{animationDelay: '1.2s'}}>🍃</div>
+        <div className="absolute bottom-40 right-1/3 text-4xl opacity-12 floating forest-emoji" style={{animationDelay: '4.2s'}}>🍃</div>
+        <div className="absolute top-1/5 right-12 text-3xl opacity-8 moving-slow-right forest-emoji" style={{animationDelay: '3.8s'}}>🌿</div>
+        <div className="absolute bottom-1/5 left-20 text-3xl opacity-15 floating forest-emoji" style={{animationDelay: '0.3s'}}>🌿</div>
         
         {/* Clouds */}
-        <div className="absolute top-4 left-1/4 text-5xl opacity-8 moving-slow-right" style={{animationDelay: '5s'}}>☁️</div>
-        <div className="absolute top-12 right-1/4 text-4xl opacity-12 moving-slow-left" style={{animationDelay: '6s'}}>☁️</div>
-        <div className="absolute top-6 left-3/4 text-3xl opacity-6 moving-slow-right" style={{animationDelay: '7s'}}>☁️</div>
+        <div className="absolute top-4 left-1/4 text-5xl opacity-8 moving-slow-right forest-emoji" style={{animationDelay: '5s'}}>☁️</div>
+        <div className="absolute top-12 right-1/4 text-4xl opacity-12 moving-slow-left forest-emoji" style={{animationDelay: '6s'}}>☁️</div>
+        <div className="absolute top-6 left-3/4 text-3xl opacity-6 moving-slow-right forest-emoji" style={{animationDelay: '7s'}}>☁️</div>
         
         {/* Forest Animals */}
-        <div className="absolute top-1/2 right-8 text-3xl opacity-10 moving-slow-left" style={{animationDelay: '8s'}}>🦌</div>
-        <div className="absolute bottom-1/4 left-1/5 text-3xl opacity-12 floating" style={{animationDelay: '9s'}}>🐰</div>
-        <div className="absolute top-2/5 left-3/4 text-4xl opacity-8 moving-slow-up" style={{animationDelay: '10s'}}>🐻</div>
-        <div className="absolute bottom-1/3 right-1/6 text-2xl opacity-15 floating" style={{animationDelay: '11s'}}>🦔</div>
-        <div className="absolute top-3/5 left-1/6 text-2xl opacity-10 moving-slow-right" style={{animationDelay: '12s'}}>🐿️</div>
+        <div className="absolute top-1/2 right-8 text-3xl opacity-10 moving-slow-left forest-emoji" style={{animationDelay: '8s'}}>🦌</div>
+        <div className="absolute bottom-1/4 left-1/5 text-3xl opacity-12 floating forest-emoji" style={{animationDelay: '9s'}}>🐰</div>
+        <div className="absolute top-2/5 left-3/4 text-4xl opacity-8 moving-slow-up forest-emoji" style={{animationDelay: '10s'}}>🐻</div>
+        <div className="absolute bottom-1/3 right-1/6 text-2xl opacity-15 floating forest-emoji" style={{animationDelay: '11s'}}>🦔</div>
+        <div className="absolute top-3/5 left-1/6 text-2xl opacity-10 moving-slow-right forest-emoji" style={{animationDelay: '12s'}}>🐿️</div>
         
         {/* Slow Moving Elements */}
-        <div className="absolute top-1/3 right-1/2 text-3xl opacity-8 moving-slow-right" style={{animationDelay: '2s'}}>🦋</div>
-        <div className="absolute bottom-2/5 left-1/3 text-2xl opacity-12 moving-slow-left" style={{animationDelay: '4s'}}>🐝</div>
-        <div className="absolute top-4/5 right-2/5 text-2xl opacity-10 moving-slow-up" style={{animationDelay: '6s'}}>🪶</div>
+        <div className="absolute top-1/3 right-1/2 text-3xl opacity-8 moving-slow-right forest-emoji" style={{animationDelay: '2s'}}>🦋</div>
+        <div className="absolute bottom-2/5 left-1/3 text-2xl opacity-12 moving-slow-left forest-emoji" style={{animationDelay: '4s'}}>🐝</div>
+        <div className="absolute top-4/5 right-2/5 text-2xl opacity-10 moving-slow-up forest-emoji" style={{animationDelay: '6s'}}>🪶</div>
       </div>
 
       <Card className="w-full max-w-md relative z-10">
