@@ -1,8 +1,9 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-// 使用简单的状态提示，不依赖外部toast库
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Web3Wallet, TEST_NETWORKS, formatAddress, type NetworkKey } from '@/lib/web3'
 
 const Index = () => {
   const [email, setEmail] = useState('')
@@ -11,15 +12,110 @@ const Index = () => {
   const [position, setPosition] = useState<number | null>(null)
   const [totalCount, setTotalCount] = useState<number | null>(null)
   const [message, setMessage] = useState<{text: string, type: 'success' | 'error'} | null>(null)
+  
+  // Web3 states
+  const [walletConnected, setWalletConnected] = useState(false)
+  const [walletAddress, setWalletAddress] = useState('')
+  const [selectedNetwork, setSelectedNetwork] = useState<NetworkKey>('sepolia')
+  const [signature, setSignature] = useState('')
+  const [wallet, setWallet] = useState<Web3Wallet | null>(null)
 
   const showMessage = (text: string, type: 'success' | 'error') => {
     setMessage({text, type})
     setTimeout(() => setMessage(null), 3000)
   }
 
+  // Initialize wallet on component mount
+  useEffect(() => {
+    if (Web3Wallet.isWalletInstalled()) {
+      try {
+        const walletInstance = new Web3Wallet()
+        setWallet(walletInstance)
+        
+        // Check if already connected
+        walletInstance.getAccounts().then(accounts => {
+          if (accounts.length > 0) {
+            setWalletAddress(accounts[0])
+            setWalletConnected(true)
+          }
+        })
+      } catch (error) {
+        console.error('Failed to initialize wallet:', error)
+      }
+    }
+  }, [])
+
+  // Connect wallet
+  const connectWallet = async () => {
+    if (!wallet) {
+      showMessage('No Web3 wallet detected. Please install MetaMask.', 'error')
+      return
+    }
+
+    try {
+      setLoading(true)
+      const accounts = await wallet.connect()
+      
+      if (accounts.length > 0) {
+        setWalletAddress(accounts[0])
+        setWalletConnected(true)
+        showMessage('Wallet connected successfully!', 'success')
+      }
+    } catch (error: any) {
+      showMessage(error.message || 'Failed to connect wallet', 'error')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  // Switch network
+  const switchNetwork = async () => {
+    if (!wallet) return
+
+    try {
+      setLoading(true)
+      await wallet.switchNetwork(selectedNetwork)
+      showMessage(`Switched to ${selectedNetwork} network`, 'success')
+    } catch (error: any) {
+      showMessage(error.message || 'Failed to switch network', 'error')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  // Sign message
+  const signMessage = async () => {
+    if (!wallet || !walletAddress) {
+      showMessage('Please connect your wallet first', 'error')
+      return
+    }
+
+    try {
+      setLoading(true)
+      const messageToSign = 'Waiting for you!'
+      const sig = await wallet.signMessage(messageToSign, walletAddress)
+      setSignature(sig)
+      showMessage('Message signed successfully!', 'success')
+    } catch (error: any) {
+      showMessage(error.message || 'Failed to sign message', 'error')
+    } finally {
+      setLoading(false)
+    }
+  }
+
   const joinWaitingList = async () => {
     if (!email) {
       showMessage("Please enter your email", "error")
+      return
+    }
+
+    if (!walletAddress) {
+      showMessage("Please connect your wallet", "error")
+      return
+    }
+
+    if (!signature) {
+      showMessage("Please sign the message first", "error")
       return
     }
 
@@ -30,7 +126,12 @@ const Index = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ 
+          email, 
+          walletAddress,
+          signature,
+          network: selectedNetwork
+        }),
       })
 
       const data = await response.json()
@@ -112,7 +213,90 @@ const Index = () => {
           )}
           {!joined ? (
             <>
-              <div className="space-y-2">
+              {/* Wallet Connection Section */}
+              <div className="space-y-4 p-4 bg-gray-50 rounded-lg">
+                <h3 className="font-semibold text-gray-900">1. Connect Your Wallet</h3>
+                {!walletConnected ? (
+                  <Button 
+                    onClick={connectWallet} 
+                    disabled={loading}
+                    className="w-full"
+                  >
+                    {loading ? 'Connecting...' : 'Connect Wallet'}
+                  </Button>
+                ) : (
+                  <div className="flex items-center justify-between p-3 bg-green-50 border border-green-200 rounded">
+                    <div className="flex items-center gap-2">
+                      <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                      <span className="text-sm font-medium text-green-800">
+                        {formatAddress(walletAddress)}
+                      </span>
+                    </div>
+                    <span className="text-xs text-green-600">Connected</span>
+                  </div>
+                )}
+              </div>
+
+              {/* Network Selection */}
+              {walletConnected && (
+                <div className="space-y-4 p-4 bg-gray-50 rounded-lg">
+                  <h3 className="font-semibold text-gray-900">2. Select Test Network</h3>
+                  <div className="flex gap-2">
+                    <Select value={selectedNetwork} onValueChange={(value: NetworkKey) => setSelectedNetwork(value)}>
+                      <SelectTrigger className="flex-1">
+                        <SelectValue placeholder="Select network" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {Object.entries(TEST_NETWORKS).map(([key, network]) => (
+                          <SelectItem key={key} value={key}>
+                            {network.chainName}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <Button 
+                      onClick={switchNetwork} 
+                      disabled={loading}
+                      variant="outline"
+                    >
+                      Switch
+                    </Button>
+                  </div>
+                </div>
+              )}
+
+              {/* Message Signing */}
+              {walletConnected && (
+                <div className="space-y-4 p-4 bg-gray-50 rounded-lg">
+                  <h3 className="font-semibold text-gray-900">3. Sign Message</h3>
+                  <div className="text-sm text-gray-600 p-3 bg-gray-100 rounded border-l-4 border-blue-500">
+                    Message to sign: <strong>"Waiting for you!"</strong>
+                  </div>
+                  {!signature ? (
+                    <Button 
+                      onClick={signMessage} 
+                      disabled={loading}
+                      className="w-full"
+                    >
+                      {loading ? 'Signing...' : 'Sign Message'}
+                    </Button>
+                  ) : (
+                    <div className="p-3 bg-green-50 border border-green-200 rounded">
+                      <div className="flex items-center gap-2 mb-2">
+                        <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                        <span className="text-sm font-medium text-green-800">Message Signed</span>
+                      </div>
+                      <div className="text-xs text-gray-600 break-all">
+                        {signature.slice(0, 20)}...{signature.slice(-20)}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Email Input */}
+              <div className="space-y-4 p-4 bg-gray-50 rounded-lg">
+                <h3 className="font-semibold text-gray-900">4. Enter Your Email</h3>
                 <Input
                   type="email"
                   placeholder="your@email.com"
@@ -121,10 +305,12 @@ const Index = () => {
                   disabled={loading}
                 />
               </div>
+
+              {/* Join Button */}
               <div className="flex gap-2">
                 <Button 
                   onClick={joinWaitingList} 
-                  disabled={loading}
+                  disabled={loading || !walletConnected || !signature || !email}
                   className="flex-1"
                 >
                   {loading ? 'Joining...' : 'Join Waiting List'}
