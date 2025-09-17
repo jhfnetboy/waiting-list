@@ -63,8 +63,9 @@ const Index = () => {
         setWalletConnected(true)
         showMessage('Wallet connected successfully!', 'success')
       }
-    } catch (error: any) {
-      showMessage(error.message || 'Failed to connect wallet', 'error')
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to connect wallet'
+      showMessage(errorMessage, 'error')
     } finally {
       setLoading(false)
     }
@@ -78,8 +79,9 @@ const Index = () => {
       setLoading(true)
       await wallet.switchNetwork(selectedNetwork)
       showMessage(`Switched to ${selectedNetwork} network`, 'success')
-    } catch (error: any) {
-      showMessage(error.message || 'Failed to switch network', 'error')
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to switch network'
+      showMessage(errorMessage, 'error')
     } finally {
       setLoading(false)
     }
@@ -98,8 +100,9 @@ const Index = () => {
       const sig = await wallet.signMessage(messageToSign, walletAddress)
       setSignature(sig)
       showMessage('Message signed successfully!', 'success')
-    } catch (error: any) {
-      showMessage(error.message || 'Failed to sign message', 'error')
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to sign message'
+      showMessage(errorMessage, 'error')
     } finally {
       setLoading(false)
     }
@@ -154,6 +157,7 @@ const Index = () => {
         showMessage(data.error || "Failed to join waiting list", "error")
       }
     } catch (error) {
+      console.error('Join waitlist error:', error)
       showMessage("Network error. Please try again.", "error")
     } finally {
       setLoading(false)
@@ -193,6 +197,7 @@ const Index = () => {
         showMessage("Email not found in waiting list", "error")
       }
     } catch (error) {
+      console.error('Check position error:', error)
       showMessage("Network error. Please try again.", "error")
     } finally {
       setLoading(false)
@@ -204,51 +209,58 @@ const Index = () => {
       {/* Background Forest Decorations */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         {/* Trees and Forest Elements */}
-        <div className="absolute top-8 left-12 text-8xl opacity-12 floating forest-emoji" style={{animationDelay: '1s'}}>🌲</div>
-        <div className="absolute top-16 right-20 text-7xl opacity-10 moving-slow-right forest-emoji" style={{animationDelay: '2s'}}>🌳</div>
-        <div className="absolute bottom-28 left-16 text-9xl opacity-8 floating forest-emoji" style={{animationDelay: '3s'}}>🌲</div>
-        <div className="absolute bottom-20 right-10 text-8xl opacity-15 moving-slow-left forest-emoji" style={{animationDelay: '1.5s'}}>🌳</div>
+        <div className="absolute top-8 left-12 text-8xl opacity-20 floating forest-emoji" style={{animationDelay: '1s'}}>🌲</div>
+        <div className="absolute top-16 right-20 text-7xl opacity-25 moving-slow-right forest-emoji" style={{animationDelay: '2s'}}>🌳</div>
+        <div className="absolute bottom-28 left-16 text-9xl opacity-15 floating forest-emoji" style={{animationDelay: '3s'}}>🌲</div>
+        <div className="absolute bottom-20 right-10 text-8xl opacity-30 moving-slow-left forest-emoji" style={{animationDelay: '1.5s'}}>🌳</div>
         
         {/* Mushrooms */}
-        <div className="absolute top-1/3 left-8 text-5xl opacity-12 floating forest-emoji" style={{animationDelay: '0.5s'}}>🍄</div>
-        <div className="absolute bottom-1/4 right-1/4 text-4xl opacity-10 moving-slow-up forest-emoji" style={{animationDelay: '4s'}}>🍄</div>
-        <div className="absolute top-3/4 left-1/3 text-3xl opacity-8 floating forest-emoji" style={{animationDelay: '2.5s'}}>🍄</div>
+        <div className="absolute top-1/3 left-8 text-5xl opacity-25 floating forest-emoji" style={{animationDelay: '0.5s'}}>🍄</div>
+        <div className="absolute bottom-1/4 right-1/4 text-4xl opacity-20 moving-slow-up forest-emoji" style={{animationDelay: '4s'}}>🍄</div>
+        <div className="absolute top-3/4 left-1/3 text-3xl opacity-15 floating forest-emoji" style={{animationDelay: '2.5s'}}>🍄</div>
         
         {/* Flowers and Plants */}
-        <div className="absolute top-1/4 right-1/3 text-4xl opacity-15 floating forest-emoji" style={{animationDelay: '1.8s'}}>🌸</div>
-        <div className="absolute bottom-1/3 left-1/2 text-3xl opacity-12 moving-slow-up forest-emoji" style={{animationDelay: '3.5s'}}>🌺</div>
-        <div className="absolute top-2/3 right-1/5 text-4xl opacity-10 floating forest-emoji" style={{animationDelay: '0.8s'}}>🌼</div>
-        <div className="absolute top-1/2 left-1/4 text-3xl opacity-8 moving-slow-right forest-emoji" style={{animationDelay: '2.2s'}}>🌻</div>
+        <div className="absolute top-1/4 right-1/3 text-4xl opacity-30 floating forest-emoji" style={{animationDelay: '1.8s'}}>🌸</div>
+        <div className="absolute bottom-1/3 left-1/2 text-3xl opacity-25 moving-slow-up forest-emoji" style={{animationDelay: '3.5s'}}>🌺</div>
+        <div className="absolute top-2/3 right-1/5 text-4xl opacity-20 floating forest-emoji" style={{animationDelay: '0.8s'}}>🌼</div>
+        <div className="absolute top-1/2 left-1/4 text-3xl opacity-15 moving-slow-right forest-emoji" style={{animationDelay: '2.2s'}}>🌻</div>
         
         {/* Leaves and Nature */}
-        <div className="absolute top-20 left-1/3 text-3xl opacity-10 moving-slow-left forest-emoji" style={{animationDelay: '1.2s'}}>🍃</div>
-        <div className="absolute bottom-40 right-1/3 text-4xl opacity-12 floating forest-emoji" style={{animationDelay: '4.2s'}}>🍃</div>
-        <div className="absolute top-1/5 right-12 text-3xl opacity-8 moving-slow-right forest-emoji" style={{animationDelay: '3.8s'}}>🌿</div>
-        <div className="absolute bottom-1/5 left-20 text-3xl opacity-15 floating forest-emoji" style={{animationDelay: '0.3s'}}>🌿</div>
+        <div className="absolute top-20 left-1/3 text-3xl opacity-20 moving-slow-left forest-emoji" style={{animationDelay: '1.2s'}}>🍃</div>
+        <div className="absolute bottom-40 right-1/3 text-4xl opacity-25 floating forest-emoji" style={{animationDelay: '4.2s'}}>🍃</div>
+        <div className="absolute top-1/5 right-12 text-3xl opacity-15 moving-slow-right forest-emoji" style={{animationDelay: '3.8s'}}>🌿</div>
+        <div className="absolute bottom-1/5 left-20 text-3xl opacity-30 floating forest-emoji" style={{animationDelay: '0.3s'}}>🌿</div>
         
         {/* Clouds */}
-        <div className="absolute top-4 left-1/4 text-5xl opacity-8 moving-slow-right forest-emoji" style={{animationDelay: '5s'}}>☁️</div>
-        <div className="absolute top-12 right-1/4 text-4xl opacity-12 moving-slow-left forest-emoji" style={{animationDelay: '6s'}}>☁️</div>
-        <div className="absolute top-6 left-3/4 text-3xl opacity-6 moving-slow-right forest-emoji" style={{animationDelay: '7s'}}>☁️</div>
+        <div className="absolute top-4 left-1/4 text-5xl opacity-15 moving-slow-right forest-emoji" style={{animationDelay: '5s'}}>☁️</div>
+        <div className="absolute top-12 right-1/4 text-4xl opacity-25 moving-slow-left forest-emoji" style={{animationDelay: '6s'}}>☁️</div>
+        <div className="absolute top-6 left-3/4 text-3xl opacity-20 moving-slow-right forest-emoji" style={{animationDelay: '7s'}}>☁️</div>
         
         {/* Forest Animals */}
-        <div className="absolute top-1/2 right-8 text-3xl opacity-10 moving-slow-left forest-emoji" style={{animationDelay: '8s'}}>🦌</div>
-        <div className="absolute bottom-1/4 left-1/5 text-3xl opacity-12 floating forest-emoji" style={{animationDelay: '9s'}}>🐰</div>
-        <div className="absolute top-2/5 left-3/4 text-4xl opacity-8 moving-slow-up forest-emoji" style={{animationDelay: '10s'}}>🐻</div>
-        <div className="absolute bottom-1/3 right-1/6 text-2xl opacity-15 floating forest-emoji" style={{animationDelay: '11s'}}>🦔</div>
-        <div className="absolute top-3/5 left-1/6 text-2xl opacity-10 moving-slow-right forest-emoji" style={{animationDelay: '12s'}}>🐿️</div>
+        <div className="absolute top-1/2 right-8 text-3xl opacity-20 moving-slow-left forest-emoji" style={{animationDelay: '8s'}}>🦌</div>
+        <div className="absolute bottom-1/4 left-1/5 text-3xl opacity-25 floating forest-emoji" style={{animationDelay: '9s'}}>🐰</div>
+        <div className="absolute top-2/5 left-3/4 text-4xl opacity-15 moving-slow-up forest-emoji" style={{animationDelay: '10s'}}>🐻</div>
+        <div className="absolute bottom-1/3 right-1/6 text-2xl opacity-30 floating forest-emoji" style={{animationDelay: '11s'}}>🦔</div>
+        <div className="absolute top-3/5 left-1/6 text-2xl opacity-20 moving-slow-right forest-emoji" style={{animationDelay: '12s'}}>🐿️</div>
         
         {/* Slow Moving Elements */}
-        <div className="absolute top-1/3 right-1/2 text-3xl opacity-8 moving-slow-right forest-emoji" style={{animationDelay: '2s'}}>🦋</div>
-        <div className="absolute bottom-2/5 left-1/3 text-2xl opacity-12 moving-slow-left forest-emoji" style={{animationDelay: '4s'}}>🐝</div>
-        <div className="absolute top-4/5 right-2/5 text-2xl opacity-10 moving-slow-up forest-emoji" style={{animationDelay: '6s'}}>🪶</div>
+        <div className="absolute top-1/3 right-1/2 text-3xl opacity-15 moving-slow-right forest-emoji" style={{animationDelay: '2s'}}>🦋</div>
+        <div className="absolute bottom-2/5 left-1/3 text-2xl opacity-25 moving-slow-left forest-emoji" style={{animationDelay: '4s'}}>🐝</div>
+        <div className="absolute top-4/5 right-2/5 text-2xl opacity-20 moving-slow-up forest-emoji" style={{animationDelay: '6s'}}>🪶</div>
       </div>
 
       <Card className="w-full max-w-md relative z-10">
         <CardHeader className="text-center">
+          <div className="flex items-center justify-center gap-3 mb-2">
           <CardTitle className="text-2xl font-bold text-gray-900">
             Join Our Waiting List
           </CardTitle>
+            <img 
+              src="https://raw.githubusercontent.com/jhfnetboy/MarkDownImg/main/img/202509171600702.png" 
+              alt="Logo" 
+              className="w-8 h-8 object-contain"
+            />
+          </div>
           <CardDescription>
             Be the first to know when we launch!
           </CardDescription>
