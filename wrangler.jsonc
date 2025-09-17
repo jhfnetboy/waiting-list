@@ -3,6 +3,7 @@
   "name": "waiting-list",
   "main": "src/worker.ts",
   "compatibility_date": "2025-07-17",
+  "workers_dev": true,
   "compatibility_flags": [
     "nodejs_compat",
     "global_fetch_strictly_public"
@@ -15,8 +16,8 @@
   "kv_namespaces": [
     {
       "binding": "WAITING_LIST",
-      "id": "YOUR_KV_NAMESPACE_ID",
-      "preview_id": "YOUR_KV_PREVIEW_ID"
+      "id": "97f4c6e4d2504ef3b04c62a9debae60d",
+      "preview_id": "fd84d9ef5b3140e59a7116893618b3a0"
     }
   ],
   "vars": {
