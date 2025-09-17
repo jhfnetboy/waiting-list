@@ -3,12 +3,12 @@
 // export dynamically through wrangler, or we can potentially let users directly
 // add them as a sort of "plugin" system.
 
-import ENTRY, { __INTERNAL_WRANGLER_MIDDLEWARE__ } from "/Users/jason/Dev/aastar/waiting-list/.wrangler/tmp/bundle-WxJwro/middleware-insertion-facade.js";
+import ENTRY, { __INTERNAL_WRANGLER_MIDDLEWARE__ } from "/Users/jason/Dev/aastar/waiting-list/.wrangler/tmp/bundle-JBOh6D/middleware-insertion-facade.js";
 import { __facade_invoke__, __facade_register__, Dispatcher } from "/Users/jason/Dev/aastar/waiting-list/node_modules/.pnpm/wrangler@4.37.1_@cloudflare+workers-types@4.20250917.0_bufferutil@4.0.9_utf-8-validate@5.0.10/node_modules/wrangler/templates/middleware/common.ts";
-import type { WorkerEntrypointConstructor } from "/Users/jason/Dev/aastar/waiting-list/.wrangler/tmp/bundle-WxJwro/middleware-insertion-facade.js";
+import type { WorkerEntrypointConstructor } from "/Users/jason/Dev/aastar/waiting-list/.wrangler/tmp/bundle-JBOh6D/middleware-insertion-facade.js";
 
 // Preserve all the exports from the worker
-export * from "/Users/jason/Dev/aastar/waiting-list/.wrangler/tmp/bundle-WxJwro/middleware-insertion-facade.js";
+export * from "/Users/jason/Dev/aastar/waiting-list/.wrangler/tmp/bundle-JBOh6D/middleware-insertion-facade.js";
 
 class __Facade_ScheduledController__ implements ScheduledController {
 	readonly #noRetry: ScheduledController["noRetry"];
