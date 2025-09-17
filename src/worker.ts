@@ -62,33 +62,126 @@ app.post('/api/waitlist', async (c) => {
       return c.json({ error: 'Wallet address already registered' }, 409)
     }
     
-    // Save to KV store
+    // Generate verification token
+    const verificationToken = crypto.randomUUID()
+    
+    // Save to KV store with unverified status
     const userData = {
       email,
       walletAddress,
       signature,
       network: network || 'unknown',
       joinedAt: new Date().toISOString(),
-      position: await getNextPosition(c.env.WAITING_LIST)
+      position: await getNextPosition(c.env.WAITING_LIST),
+      verified: false,
+      verificationToken
     }
     
     // Store by email and wallet address for duplicate checking
     await c.env.WAITING_LIST.put(email, JSON.stringify(userData))
     await c.env.WAITING_LIST.put(`wallet:${walletAddress}`, JSON.stringify(userData))
     await c.env.WAITING_LIST.put(`position:${userData.position}`, email)
+    await c.env.WAITING_LIST.put(`verify:${verificationToken}`, email)
     
-    // Send welcome email
-    await sendWelcomeEmail(c.env, email, userData.position)
+    // Send verification email instead of welcome email
+    await sendVerificationEmail(c.env, email, verificationToken)
     
     return c.json({ 
-      message: 'Successfully joined waiting list',
+      message: 'Successfully joined waiting list. Please check your email to verify your account.',
       position: userData.position,
       email: userData.email,
-      walletAddress: userData.walletAddress
+      walletAddress: userData.walletAddress,
+      verified: false,
+      needsVerification: true
     })
   } catch (error) {
     console.error('Waitlist registration error:', error)
     return c.json({ error: 'Internal server error' }, 500)
+  }
+})
+
+// Email verification endpoint
+app.get('/api/verify', async (c) => {
+  try {
+    const token = c.req.query('token')
+    
+    if (!token) {
+      return c.html(`
+        <html>
+          <body style="font-family: Arial, sans-serif; text-align: center; padding: 50px;">
+            <h2>❌ Invalid Verification Link</h2>
+            <p>The verification token is missing or invalid.</p>
+          </body>
+        </html>
+      `, 400)
+    }
+
+    // Get email from verification token
+    const email = await c.env.WAITING_LIST.get(`verify:${token}`)
+    
+    if (!email) {
+      return c.html(`
+        <html>
+          <body style="font-family: Arial, sans-serif; text-align: center; padding: 50px;">
+            <h2>❌ Invalid or Expired Token</h2>
+            <p>This verification link is invalid or has already been used.</p>
+          </body>
+        </html>
+      `, 400)
+    }
+
+    // Get user data and update verification status
+    const userDataStr = await c.env.WAITING_LIST.get(email)
+    if (!userDataStr) {
+      return c.html(`
+        <html>
+          <body style="font-family: Arial, sans-serif; text-align: center; padding: 50px;">
+            <h2>❌ User Not Found</h2>
+            <p>User data not found.</p>
+          </body>
+        </html>
+      `, 404)
+    }
+
+    const userData = JSON.parse(userDataStr)
+    userData.verified = true
+    userData.verifiedAt = new Date().toISOString()
+
+    // Update user data
+    await c.env.WAITING_LIST.put(email, JSON.stringify(userData))
+    await c.env.WAITING_LIST.put(`wallet:${userData.walletAddress}`, JSON.stringify(userData))
+    
+    // Remove verification token (one-time use)
+    await c.env.WAITING_LIST.delete(`verify:${token}`)
+    
+    // Send welcome email after verification
+    await sendWelcomeEmail(c.env, email, userData.position)
+
+    return c.html(`
+      <html>
+        <body style="font-family: Arial, sans-serif; text-align: center; padding: 50px;">
+          <h2>✅ Email Verified Successfully!</h2>
+          <p>Welcome to the waiting list! Your email has been verified.</p>
+          <p>🎯 Your position: <strong>#${userData.position}</strong></p>
+          <p>📧 A welcome email has been sent to your inbox.</p>
+          <div style="margin-top: 30px;">
+            <a href="https://waiting-list.jhfnetboy.workers.dev" style="background: #28a745; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px;">
+              🌲 Return to Waiting List
+            </a>
+          </div>
+        </body>
+      </html>
+    `)
+  } catch (error) {
+    console.error('Verification error:', error)
+    return c.html(`
+      <html>
+        <body style="font-family: Arial, sans-serif; text-align: center; padding: 50px;">
+          <h2>❌ Verification Failed</h2>
+          <p>An error occurred during verification. Please try again.</p>
+        </body>
+      </html>
+    `, 500)
   }
 })
 
@@ -101,7 +194,17 @@ app.get('/api/waitlist/:email', async (c) => {
       return c.json({ error: 'Email not found' }, 404)
     }
     
-    return c.json(JSON.parse(userData))
+    const user = JSON.parse(userData)
+    return c.json({
+      email: user.email,
+      position: user.position,
+      joinedAt: user.joinedAt,
+      verified: user.verified || false,
+      verifiedAt: user.verifiedAt || null,
+      walletAddress: user.walletAddress,
+      network: user.network,
+      message: `You are #${user.position} in the waiting list${user.verified ? ' (Verified ✅)' : ' (Unverified ⚠️)'}`
+    })
   } catch (error) {
     return c.json({ error: 'Internal server error' }, 500)
   }
@@ -122,6 +225,67 @@ app.get('/api/waitlist', async (c) => {
 async function getNextPosition(kv: KVNamespace): Promise<number> {
   const list = await kv.list({ prefix: 'position:' })
   return list.keys.length + 1
+}
+
+// Email verification function using Resend
+async function sendVerificationEmail(env: Env, email: string, token: string): Promise<boolean> {
+  // Skip if no API key configured
+  if (!env.RESEND_API_KEY) {
+    console.log('Resend API key not configured, skipping verification email')
+    return false
+  }
+
+  try {
+    const verifyUrl = `https://waiting-list.jhfnetboy.workers.dev/api/verify?token=${token}`
+    
+    const response = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${env.RESEND_API_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        from: env.FROM_EMAIL || 'Waiting List <noreply@yourdomain.com>',
+        to: [email],
+        subject: 'Verify Your Email - Waiting List',
+        html: `
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+            <h2 style="color: #333;">🌲 Verify Your Email</h2>
+            <p>Hi there,</p>
+            <p>Thank you for joining our waiting list with your Web3 wallet! To complete your registration, please verify your email address.</p>
+            
+            <div style="margin: 30px 0; text-align: center;">
+              <a href="${verifyUrl}" style="background: #007bff; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; display: inline-block;">
+                ✅ Verify Email Address
+              </a>
+            </div>
+            
+            <p>Or copy and paste this link into your browser:</p>
+            <p style="background: #f5f5f5; padding: 10px; border-radius: 3px; word-break: break-all;">
+              ${verifyUrl}
+            </p>
+            
+            <p style="color: #666; font-size: 14px;">
+              If you didn't sign up for our waiting list, you can safely ignore this email.
+            </p>
+            
+            <p>Best regards,<br>The Waiting List Team 🚀</p>
+          </div>
+        `,
+      }),
+    })
+
+    if (!response.ok) {
+      console.error('Failed to send verification email:', await response.text())
+      return false
+    }
+
+    console.log('Verification email sent successfully to:', email)
+    return true
+  } catch (error) {
+    console.error('Error sending verification email:', error)
+    return false
+  }
 }
 
 // Email sending function using Resend

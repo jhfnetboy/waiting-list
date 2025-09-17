@@ -12,6 +12,8 @@ const Index = () => {
   const [position, setPosition] = useState<number | null>(null)
   const [totalCount, setTotalCount] = useState<number | null>(null)
   const [message, setMessage] = useState<{text: string, type: 'success' | 'error'} | null>(null)
+  const [needsVerification, setNeedsVerification] = useState(false)
+  const [verified, setVerified] = useState(false)
   
   // Web3 states
   const [walletConnected, setWalletConnected] = useState(false)
@@ -139,7 +141,14 @@ const Index = () => {
       if (response.ok) {
         setJoined(true)
         setPosition(data.position)
-        showMessage(`Success! You're #${data.position} on the waiting list`, "success")
+        setNeedsVerification(data.needsVerification || false)
+        setVerified(data.verified || false)
+        
+        if (data.needsVerification) {
+          showMessage('Registration successful! Please check your email to verify your account.', "success")
+        } else {
+          showMessage(`Welcome! You're #${data.position} in the waiting list`, "success")
+        }
         fetchTotalCount()
       } else {
         showMessage(data.error || "Failed to join waiting list", "error")
