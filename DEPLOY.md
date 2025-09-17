@@ -67,9 +67,10 @@ npx wrangler deploy
 
 ## 功能特性
 
-- ✅ 邮箱注册等候名单
-- ✅ 查看排队位置
-- ✅ 重复邮箱检测
+- ✅ Web3钱包连接验证
+- ✅ 数字签名验证("Waiting for you!")
+- ✅ 多测试网支持(Sepolia/Goerli/Mumbai)
+- ✅ 邮箱和钱包地址防重复
 - ✅ 响应式界面
 - ✅ 实时状态查询
 
@@ -79,7 +80,10 @@ npx wrangler deploy
 注册加入等候名单
 ```json
 {
-  "email": "user@example.com"
+  "email": "user@example.com",
+  "walletAddress": "0x742d35Cc6635C0532925a3b8D400100329af1e88",
+  "signature": "0x...",
+  "network": "sepolia"
 }
 ```
 

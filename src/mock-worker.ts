@@ -53,34 +53,57 @@ app.use(
 // API Routes for Waiting List
 app.post('/api/waitlist', async (c) => {
   try {
-    const { email } = await c.req.json()
+    const { email, walletAddress, signature, network } = await c.req.json()
     
-    if (!email) {
-      return c.json({ error: 'Email is required' }, 400)
+    if (!email || !walletAddress || !signature) {
+      return c.json({ error: 'Email, wallet address, and signature are required' }, 400)
     }
     
-    // Check if email already exists
-    const existing = await mockEnv.WAITING_LIST.get(email)
-    if (existing) {
+    // Basic signature validation (format check)
+    if (!/^0x[a-fA-F0-9]{130}$/.test(signature)) {
+      return c.json({ error: 'Invalid signature format' }, 400)
+    }
+    
+    // Basic wallet address validation
+    if (!/^0x[a-fA-F0-9]{40}$/.test(walletAddress)) {
+      return c.json({ error: 'Invalid wallet address format' }, 400)
+    }
+    
+    // Check if email or wallet already exists
+    const existingByEmail = await mockEnv.WAITING_LIST.get(email)
+    const existingByWallet = await mockEnv.WAITING_LIST.get(`wallet:${walletAddress}`)
+    
+    if (existingByEmail) {
       return c.json({ error: 'Email already registered' }, 409)
+    }
+    
+    if (existingByWallet) {
+      return c.json({ error: 'Wallet address already registered' }, 409)
     }
     
     // Save to mock KV store
     const userData = {
       email,
+      walletAddress,
+      signature,
+      network: network || 'unknown',
       joinedAt: new Date().toISOString(),
       position: await getNextPosition(mockEnv.WAITING_LIST)
     }
     
+    // Store by email and wallet address for duplicate checking
     await mockEnv.WAITING_LIST.put(email, JSON.stringify(userData))
+    await mockEnv.WAITING_LIST.put(`wallet:${walletAddress}`, JSON.stringify(userData))
     await mockEnv.WAITING_LIST.put(`position:${userData.position}`, email)
     
     return c.json({ 
       message: 'Successfully joined waiting list',
       position: userData.position,
-      email: userData.email
+      email: userData.email,
+      walletAddress: userData.walletAddress
     })
   } catch (error) {
+    console.error('Waitlist registration error:', error)
     return c.json({ error: 'Internal server error' }, 500)
   }
 })
