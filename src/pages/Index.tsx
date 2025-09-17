@@ -324,6 +324,13 @@ const Index = () => {
                   <div className="text-sm text-gray-600 p-3 bg-gray-100 rounded border-l-4 border-blue-500">
                     Message to sign: <strong>"Waiting for you!"</strong>
                   </div>
+                  <div className="text-xs text-green-700 p-3 bg-green-50 rounded border border-green-200 flex items-center gap-2">
+                    <div className="w-2 h-2 bg-green-500 rounded-full flex-shrink-0"></div>
+                    <div>
+                      <strong>🔒 Safe Off-Chain Operation:</strong> This signature is for verification only. 
+                      No transactions will be submitted and no fees will be charged. Your wallet remains secure.
+                    </div>
+                  </div>
                   {!signature ? (
                     <Button 
                       onClick={signMessage} 
