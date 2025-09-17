@@ -34,10 +34,10 @@ app.use(
 // API Routes for Waiting List
 app.post('/api/waitlist', async (c) => {
   try {
-    const { email, name } = await c.req.json()
+    const { email } = await c.req.json()
     
-    if (!email || !name) {
-      return c.json({ error: 'Email and name are required' }, 400)
+    if (!email) {
+      return c.json({ error: 'Email is required' }, 400)
     }
     
     // Check if email already exists
@@ -49,7 +49,6 @@ app.post('/api/waitlist', async (c) => {
     // Save to KV store
     const userData = {
       email,
-      name,
       joinedAt: new Date().toISOString(),
       position: await getNextPosition(c.env.WAITING_LIST)
     }
@@ -58,7 +57,7 @@ app.post('/api/waitlist', async (c) => {
     await c.env.WAITING_LIST.put(`position:${userData.position}`, email)
     
     // Send welcome email
-    await sendWelcomeEmail(c.env, email, name, userData.position)
+    await sendWelcomeEmail(c.env, email, userData.position)
     
     return c.json({ 
       message: 'Successfully joined waiting list',
@@ -103,7 +102,7 @@ async function getNextPosition(kv: KVNamespace): Promise<number> {
 }
 
 // Email sending function using Resend
-async function sendWelcomeEmail(env: Env, email: string, name: string, position: number): Promise<boolean> {
+async function sendWelcomeEmail(env: Env, email: string, position: number): Promise<boolean> {
   // If Resend API key is not configured, skip email sending
   if (!env.RESEND_API_KEY) {
     console.log('Resend API key not configured, skipping email')
@@ -132,7 +131,7 @@ async function sendWelcomeEmail(env: Env, email: string, name: string, position:
             <h1>🎉 You're on the list!</h1>
           </div>
           <div class="content">
-            <p>Hi <strong>${name}</strong>,</p>
+            <p>Hi there,</p>
             <p>Thank you for joining our waiting list! We're excited to have you on board.</p>
             
             <div class="position">

@@ -53,10 +53,10 @@ app.use(
 // API Routes for Waiting List
 app.post('/api/waitlist', async (c) => {
   try {
-    const { email, name } = await c.req.json()
+    const { email } = await c.req.json()
     
-    if (!email || !name) {
-      return c.json({ error: 'Email and name are required' }, 400)
+    if (!email) {
+      return c.json({ error: 'Email is required' }, 400)
     }
     
     // Check if email already exists
@@ -68,7 +68,6 @@ app.post('/api/waitlist', async (c) => {
     // Save to mock KV store
     const userData = {
       email,
-      name,
       joinedAt: new Date().toISOString(),
       position: await getNextPosition(mockEnv.WAITING_LIST)
     }

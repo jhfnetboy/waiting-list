@@ -6,7 +6,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 
 const Index = () => {
   const [email, setEmail] = useState('')
-  const [name, setName] = useState('')
   const [loading, setLoading] = useState(false)
   const [joined, setJoined] = useState(false)
   const [position, setPosition] = useState<number | null>(null)
@@ -19,8 +18,8 @@ const Index = () => {
   }
 
   const joinWaitingList = async () => {
-    if (!email || !name) {
-      showMessage("Please fill in all fields", "error")
+    if (!email) {
+      showMessage("Please enter your email", "error")
       return
     }
 
@@ -31,7 +30,7 @@ const Index = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email, name }),
+        body: JSON.stringify({ email }),
       })
 
       const data = await response.json()
@@ -113,15 +112,6 @@ const Index = () => {
           )}
           {!joined ? (
             <>
-              <div className="space-y-2">
-                <Input
-                  type="text"
-                  placeholder="Your name"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  disabled={loading}
-                />
-              </div>
               <div className="space-y-2">
                 <Input
                   type="email"

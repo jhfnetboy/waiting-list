@@ -79,8 +79,7 @@ npx wrangler deploy
 注册加入等候名单
 ```json
 {
-  "email": "user@example.com",
-  "name": "User Name"
+  "email": "user@example.com"
 }
 ```
 
