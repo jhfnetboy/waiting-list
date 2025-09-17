@@ -146,8 +146,10 @@ export class Web3Wallet {
    */
   async signMessage(message: string, account: string): Promise<string> {
     try {
-      // Convert message to hex
-      const messageHex = '0x' + Buffer.from(message, 'utf8').toString('hex')
+      // Convert message to hex using browser-compatible method
+      const messageHex = '0x' + Array.from(new TextEncoder().encode(message))
+        .map(b => b.toString(16).padStart(2, '0'))
+        .join('')
       
       const signature = await this.ethereum.request({
         method: 'personal_sign',
