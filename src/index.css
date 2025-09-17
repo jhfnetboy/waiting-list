@@ -190,3 +190,12 @@
 .floating {
   animation: floating 15s ease-in-out infinite;
 }
+
+/* Enhanced emoji clarity and visibility */
+.forest-emoji {
+  filter: brightness(1.1) contrast(1.2) saturate(1.3);
+  text-shadow: 0 0 2px rgba(255, 255, 255, 0.3);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-feature-settings: "liga" 1, "kern" 1;
+}
