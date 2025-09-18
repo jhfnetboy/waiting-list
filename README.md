@@ -18,6 +18,7 @@ A modern, Web3-enabled waiting list application built with React, TypeScript, an
 
 ## 🛠 Tech Stack
 
+### Main Application
 - **Frontend**: React + TypeScript + Tailwind CSS + shadcn/ui
 - **Backend**: Cloudflare Workers + Hono Framework
 - **Database**: Cloudflare KV (Key-Value Store)
@@ -25,6 +26,13 @@ A modern, Web3-enabled waiting list application built with React, TypeScript, an
 - **Web3**: Native window.ethereum API (lightweight implementation)
 - **Deployment**: Cloudflare Workers (unified deployment)
 - **Architecture**: Single Worker handling both frontend assets and API endpoints
+
+### Microservices Ecosystem
+- **Wallet Scoring Service**: Independent Cloudflare Worker for wallet reputation scoring
+- **Multi-chain Support**: Ethereum, Polygon, BSC, Arbitrum, Optimism
+- **Caching Strategy**: Multi-tier caching with KV and D1 database
+- **API Integration**: RESTful APIs with SDK support
+- **Development**: Git submodules for independent development and deployment
 
 ## 📋 Prerequisites
 
@@ -53,8 +61,9 @@ Visit `http://localhost:8787` to see the application.
 
 ### Development
 
+#### Single Service Development
 ```bash
-# Start development server with hot reload
+# Start main application only
 pnpm dev
 
 # Build for production
@@ -64,10 +73,38 @@ pnpm build
 pnpm deploy
 ```
 
+#### Parallel Development (with Submodules)
+```bash
+# Clone with submodules
+git clone --recursive https://github.com/jhfnetboy/waiting-list.git
+
+# Or initialize submodules after cloning
+git submodule update --init --recursive
+
+# Start all services in parallel
+pnpm dev:all          # Main app (8787) + Wallet scorer (8788)
+
+# Build all services
+pnpm build:all
+
+# Deploy all services
+pnpm deploy:all
+```
+
+#### Manual Parallel Development
+```bash
+# Terminal 1: Main application
+pnpm dev
+
+# Terminal 2: Wallet scoring service
+cd services/wallet-scorer
+pnpm dev --port 8788
+```
+
 ## 🏗 Project Structure
 
 ```
-waiting-list/
+waiting-list/                    # Main project repository
 ├── src/
 │   ├── components/        # Reusable UI components
 │   ├── config/           # Configuration files
@@ -76,14 +113,34 @@ waiting-list/
 │   │   └── web3.ts       # Web3 wallet integration
 │   ├── pages/            # Application pages
 │   │   ├── Index.tsx     # Main waiting list page
-│   │   └── Admin.tsx     # Admin dashboard
+│   │   ├── Admin.tsx     # Admin dashboard
+│   │   └── VerifySuccess.tsx  # Email verification success page
 │   ├── worker.ts         # Cloudflare Worker (API endpoints)
 │   └── App.tsx           # Main application component
+├── services/
+│   └── wallet-scorer/    # 🔗 Git submodule: Wallet scoring microservice
 ├── scripts/
-│   └── start.sh          # Quick start script
+│   ├── start.sh          # Quick start script
+│   └── dev-all.sh        # Parallel development script
+├── docs/
+│   ├── Services-Integration.md  # Microservices integration guide
+│   └── CustomDomain-Setup.md   # Custom domain configuration
 ├── wrangler.jsonc        # Cloudflare Worker configuration
 └── README.md             # This file
 ```
+
+### 🔗 Microservices Architecture
+
+This project uses a **main project + submodules** architecture:
+
+- **Main Project**: Waiting list application with Web3 wallet integration
+- **Submodule**: [`wallet-scoring-ecosystem`](https://github.com/jhfnetboy/wallet-scoring-ecosystem) - Independent wallet scoring microservice
+
+**Benefits:**
+- ✅ **Independent Development**: Each service can be developed and deployed separately
+- ✅ **Code Reusability**: Wallet scoring system can be used by other projects
+- ✅ **Team Collaboration**: Different teams can work on different services
+- ✅ **Version Control**: Clear dependency relationships and versioning
 
 ## 🔧 Configuration
 
@@ -174,6 +231,52 @@ The application includes beautiful, customizable email templates:
 - **Emoji Support**: Rich emoji integration for better engagement
 
 Templates are configurable in `src/config/email-templates.ts`.
+
+## 🔗 Submodule Integration
+
+### Wallet Scoring Ecosystem
+
+The project integrates a sophisticated wallet scoring system as a Git submodule:
+
+**Repository**: [wallet-scoring-ecosystem](https://github.com/jhfnetboy/wallet-scoring-ecosystem)
+
+**Features:**
+- 🔍 **Multi-chain Analysis**: Scans transaction history across 5+ blockchains
+- 📊 **Credit Scoring**: 3-tier scoring system (Basic/DeFi/Risk evaluation)
+- ⚡ **Real-time Processing**: Edge computing with Cloudflare Workers
+- 🔌 **SDK Integration**: Easy integration via REST API or TypeScript SDK
+- 💰 **Commercial Ready**: Freemium model with advanced features
+
+**Integration Example:**
+```typescript
+// In waiting-list application
+const walletScore = await fetch('https://wallet-scorer.aastar.io/api/v1/score/wallet', {
+  method: 'POST',
+  headers: { 'Authorization': `Bearer ${API_KEY}` },
+  body: JSON.stringify({ address: walletAddress })
+})
+
+if (score < 30) {
+  // Suggest adding more wallet addresses
+  setShowAddMoreWallets(true)
+}
+```
+
+### Submodule Management
+
+```bash
+# Add new submodule
+git submodule add <repository-url> <local-path>
+
+# Update submodule to latest
+git submodule update --remote
+
+# Remove submodule
+git submodule deinit <path>
+git rm <path>
+```
+
+For detailed integration instructions, see [`docs/Services-Integration.md`](docs/Services-Integration.md).
 
 ## 🛡 Admin Dashboard
 
