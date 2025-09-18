@@ -12,7 +12,8 @@
 ./scripts/start.sh
 ```
 
-访问 http://localhost:8787
+- 本地开发: http://localhost:8787
+- 生产环境: https://waiting-list.aastar.io
 
 ### 2. 部署到 Cloudflare Workers
 
