@@ -170,11 +170,8 @@ app.get('/api/verify', async (c) => {
     // Send welcome email after verification
     await sendWelcomeEmail(c.env, email, userData.position)
 
-    return c.json({
-      success: true,
-      message: 'Email verified successfully',
-      position: userData.position
-    })
+    // Redirect to success page with position in URL
+    return c.redirect(`/verify-success?position=${userData.position}&email=${encodeURIComponent(userData.email)}`)
   } catch (error) {
     console.error('Verification error:', error)
     return c.json({
