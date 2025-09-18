@@ -1,0 +1,3 @@
+[submodule "services/wallet-scorer"]
+	path = services/wallet-scorer
+	url = git@github.com:jhfnetboy/wallet-scoring-ecosystem.git
