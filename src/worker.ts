@@ -170,31 +170,17 @@ app.get('/api/verify', async (c) => {
     // Send welcome email after verification
     await sendWelcomeEmail(c.env, email, userData.position)
 
-    return c.html(`
-      <html>
-        <body style="font-family: Arial, sans-serif; text-align: center; padding: 50px;">
-          <h2>✅ Email Verified Successfully!</h2>
-          <p>Welcome to the waiting list! Your email has been verified.</p>
-          <p>🎯 Your position: <strong>#${userData.position}</strong></p>
-          <p>📧 A welcome email has been sent to your inbox.</p>
-          <div style="margin-top: 30px;">
-            <a href="https://waiting-list.jhfnetboy.workers.dev" style="background: #28a745; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px;">
-              🌲 Return to Waiting List
-            </a>
-          </div>
-        </body>
-      </html>
-    `)
+    return c.json({
+      success: true,
+      message: 'Email verified successfully',
+      position: userData.position
+    })
   } catch (error) {
     console.error('Verification error:', error)
-    return c.html(`
-      <html>
-        <body style="font-family: Arial, sans-serif; text-align: center; padding: 50px;">
-          <h2>❌ Verification Failed</h2>
-          <p>An error occurred during verification. Please try again.</p>
-        </body>
-      </html>
-    `, 500)
+    return c.json({
+      success: false,
+      error: 'An error occurred during verification. Please try again.'
+    }, 500)
   }
 })
 
@@ -238,6 +224,19 @@ app.get('/api/waitlist/:email', async (c) => {
 const authenticateAdmin = async (c: unknown, password: string) => {
   const adminPassword = c.env.ADMIN_PASSWORD || 'admin123'
   return password === adminPassword
+}
+
+// Email obfuscation helper
+const obfuscateEmail = (email: string): string => {
+  const [localPart, domain] = email.split('@')
+  if (localPart.length <= 2) {
+    return `${localPart[0]}*@${domain}`
+  }
+  const visibleChars = Math.min(2, Math.floor(localPart.length / 3))
+  const start = localPart.substring(0, visibleChars)
+  const end = localPart.substring(localPart.length - 1)
+  const stars = '*'.repeat(Math.max(1, localPart.length - visibleChars - 1))
+  return `${start}${stars}${end}@${domain}`
 }
 
 // Admin login endpoint
@@ -300,8 +299,14 @@ app.get('/api/admin/users', async (c) => {
     
     const validUsers = users.filter(Boolean).sort((a, b) => a.position - b.position)
     
+    // Obfuscate email addresses for admin view
+    const obfuscatedUsers = validUsers.map(user => ({
+      ...user,
+      email: obfuscateEmail(user.email)
+    }))
+    
     return c.json({
-      users: validUsers,
+      users: obfuscatedUsers,
       total: totalUsers,
       page,
       limit,
@@ -395,7 +400,7 @@ async function sendVerificationEmail(env: Env, email: string, token: string): Pr
   console.log('📧 EMAIL DEBUG: FROM_EMAIL:', env.FROM_EMAIL || 'Waiting List <noreply@yourdomain.com>')
 
   try {
-    const verifyUrl = `https://waiting-list.jhfnetboy.workers.dev/api/verify?token=${token}`
+    const verifyUrl = `https://waiting-list.aastar.io/api/verify?token=${token}`
     console.log('📧 EMAIL DEBUG: Verification URL:', verifyUrl)
     
     // Render email template with variables
