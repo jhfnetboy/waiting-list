@@ -103,6 +103,7 @@ app.post('/api/waitlist', async (c) => {
 
 // Email verification endpoint
 app.get('/api/verify', async (c) => {
+  console.log('🔍 API VERIFY ROUTE HIT - Token:', c.req.query('token')?.substring(0, 8) + '...')
   try {
     const token = c.req.query('token')
     
@@ -494,12 +495,26 @@ async function sendWelcomeEmail(env: Env, email: string, position: number): Prom
 }
 
 // Catch-all route for SPA
-// This will only be reached if the request doesn't match any static assets
-// and doesn't match any of the API routes above
-app.get('*', async () => {
-  // For navigation requests, let Cloudflare handle SPA routing automatically
-  // This fallback is mainly for non-navigation requests that don't match assets
-  return new Response('Not Found', { status: 404 })
+// This will only be reached if the request doesn't match any of the API routes above
+app.get('*', async (c) => {
+  console.log('🔄 Catch-all route hit for path:', c.req.path)
+  
+  // For API routes that somehow got here, return 404
+  if (c.req.path.startsWith('/api/')) {
+    console.error('🚨 API route reached catch-all:', c.req.path)
+    return new Response('API endpoint not found', { status: 404 })
+  }
+  
+  // For SPA routes (non-API), serve index.html to let React Router handle it
+  try {
+    const indexRequest = new Request(c.req.url.replace(c.req.path, '/index.html'))
+    const response = await c.env.ASSETS.fetch(indexRequest)
+    console.log('📄 Serving index.html for SPA route:', c.req.path)
+    return response
+  } catch (error) {
+    console.error('❌ Error serving SPA route:', error)
+    return new Response('Not Found', { status: 404 })
+  }
 })
 
 export default app
