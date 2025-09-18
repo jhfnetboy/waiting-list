@@ -5,8 +5,11 @@
   "type": "module",
   "scripts": {
     "dev": "wrangler dev src/worker.ts --port 8787 --local",
+    "dev:all": "./scripts/dev-all.sh",
     "build": "vite build",
+    "build:all": "pnpm build && cd services/wallet-scorer && pnpm build 2>/dev/null || echo 'Wallet scorer not ready'",
     "deploy": "npm run build && wrangler deploy",
+    "deploy:all": "pnpm deploy && cd services/wallet-scorer && pnpm deploy 2>/dev/null || echo 'Wallet scorer not ready'",
     "preview": "vite preview"
   },
   "dependencies": {
